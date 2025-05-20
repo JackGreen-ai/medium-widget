@@ -6,71 +6,139 @@
   <meta name="description" content="Latest articles from Jack Green on Medium">
   <meta name="author" content="Jack Green">
   <title>Medium Articles</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
+    @font-face {
+      font-family: 'Pp Eiko Thin';
+      src: url('fonts/PPEiko-Thin.otf') format('opentype');
+      font-weight: 100;
+      font-style: normal;
+      font-display: swap;
+    }
+    
     body {
-      font-family: sans-serif;
+      font-family: 'Pp Eiko Thin', serif;
       padding: 30px;
-      background: #f5f5f5;
+      background: #fcfcfc;
       margin: 0;
+      color: #333;
+      line-height: 1.5;
     }
-    .article-card {
-      background: white;
-      padding: 20px;
-      margin-bottom: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .article-card h3 {
+    
+    h3 {
+      font-family: 'Pp Eiko Thin', serif;
+      font-weight: 300;
+      font-size: 1.5rem;
+      margin-bottom: 0.7rem;
       margin-top: 0;
     }
+    
+    p {
+      font-family: 'Pp Eiko Thin', serif;
+      font-size: 1rem;
+      color: #444;
+      margin-bottom: 1.2rem;
+    }
+    
+    #mediumRepeater {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 30px;
+      padding: 20px 0;
+    }
+    
+    .article-card {
+      background: white;
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .article-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
     .img-container {
       width: 100%;
-      height: 200px;
+      height: 180px;
       overflow: hidden;
-      border-radius: 6px;
-      margin-bottom: 10px;
-      background-color: #eee;
       position: relative;
     }
+    
     .img-container img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       transition: transform 0.3s ease;
     }
+    
     .article-card:hover .img-container img {
       transform: scale(1.05);
     }
+    
+    .card-content {
+      padding: 20px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    
     .article-card a {
-      background: black;
+      font-family: 'Montserrat', sans-serif;
+      background: #001F3F;
       color: white;
-      padding: 8px 12px;
+      padding: 10px 16px;
       border-radius: 4px;
       text-decoration: none;
       display: inline-block;
-      margin-top: 10px;
+      margin-top: auto;
+      font-weight: 500;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
       transition: background-color 0.2s;
+      text-align: center;
     }
+    
     .article-card a:hover {
-      background: #333;
+      background: #00305a;
     }
+    
     .loading, .error-message {
       text-align: center;
-      padding: 20px;
+      padding: 40px;
+      grid-column: 1 / -1;
       background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      font-family: 'Pp Eiko Thin', serif;
     }
+    
     .error-message {
       color: #e74c3c;
     }
+    
     /* Responsive adjustments */
-    @media (max-width: 600px) {
+    @media (max-width: 768px) {
       body {
         padding: 15px;
       }
+      
+      #mediumRepeater {
+        grid-template-columns: 1fr;
+      }
+      
       .img-container {
-        height: 150px;
+        height: 200px;
       }
     }
   </style>
@@ -93,9 +161,7 @@
 
     fetch(api)
       .then(res => {
-        if (!res.ok) {
-          throw new Error('Network response was not ok');
-        }
+        if (!res.ok) throw new Error('Network response was not ok');
         return res.json();
       })
       .then(data => {
@@ -134,9 +200,11 @@
           card.className = "article-card";
           card.innerHTML = `
             ${image ? `<div class="img-container"><img src="${image}" alt="${title}" loading="lazy"></div>` : ""}
-            <h3>${title}</h3>
-            <p>${desc}</p>
-            <a href="${link}" target="_blank" rel="noopener">Read More</a>
+            <div class="card-content">
+              <h3>${title}</h3>
+              <p>${desc}</p>
+              <a href="${link}" target="_blank" rel="noopener">Read more</a>
+            </div>
           `;
           container.appendChild(card);
         });
@@ -149,5 +217,6 @@
   </script>
 </body>
 </html>
+
 
 
