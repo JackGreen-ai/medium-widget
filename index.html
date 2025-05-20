@@ -1,39 +1,83 @@
-<script>
-  const feedURL = "https://medium.com/feed/@jackgreencrypto";
-  const api = "https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent(feedURL);
 
-  fetch(api)
-    .then(res => res.json())
-    .then(data => {
-      const items = data.items.slice(0, 3);
-      const container = document.getElementById("mediumRepeater");
-      container.innerHTML = "";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Medium Articles</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 30px;
+      background: #f5f5f5;
+    }
+    .article-card {
+      background: white;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .article-card h3 {
+      margin-top: 0;
+    }
+    .article-card img {
+      max-width: 100%;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+    .article-card a {
+      background: black;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 4px;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="mediumRepeater">Loading articles...</div>
 
-      items.forEach(item => {
-        const title = item.title;
-        const link = item.link;
-        const rawDesc = item.description;
-        const desc = rawDesc.replace(/<[^>]*>/g, '').slice(0, 180) + "...";
+  <script>
+    const feedURL = "https://medium.com/feed/@jackgreencrypto";
+    const api = "https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent(feedURL);
 
-        // Extract image from description HTML
-        const tempDiv = document.createElement("div");
-        tempDiv.innerHTML = rawDesc;
-        const firstImg = tempDiv.querySelector("img");
-        const image = firstImg ? firstImg.src : "";
+    fetch(api)
+      .then(res => res.json())
+      .then(data => {
+        const items = data.items.slice(0, 3);
+        const container = document.getElementById("mediumRepeater");
+        container.innerHTML = "";
 
-        const card = document.createElement("div");
-        card.className = "article-card";
-        card.innerHTML = `
-          ${image ? `<img src="${image}" alt="Thumbnail">` : ""}
-          <h3>${title}</h3>
-          <p>${desc}</p>
-          <a href="${link}" target="_blank" rel="noopener">Read More</a>
-        `;
-        container.appendChild(card);
+        items.forEach(item => {
+          const title = item.title;
+          const link = item.link;
+          const rawDesc = item.description;
+          const desc = rawDesc.replace(/<[^>]*>/g, '').slice(0, 180) + "...";
+
+          const tempDiv = document.createElement("div");
+          tempDiv.innerHTML = rawDesc;
+          const firstImg = tempDiv.querySelector("img");
+          const image = firstImg ? firstImg.src : "";
+
+          const card = document.createElement("div");
+          card.className = "article-card";
+          card.innerHTML = `
+            ${image ? `<img src="${image}" alt="Thumbnail">` : ""}
+            <h3>${title}</h3>
+            <p>${desc}</p>
+            <a href="${link}" target="_blank">Read More</a>
+          `;
+          container.appendChild(card);
+        });
+      })
+      .catch(err => {
+        document.getElementById("mediumRepeater").innerHTML = "<p>Failed to load articles.</p>";
+        console.error("RSS2JSON error:", err);
       });
-    })
-    .catch(err => {
-      document.getElementById("mediumRepeater").innerHTML = "<p>Failed to load articles.</p>";
-      console.error("RSS2JSON error:", err);
-    });
-</script>
+  </script>
+</body>
+</html>
+
