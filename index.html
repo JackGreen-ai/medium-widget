@@ -25,6 +25,7 @@
       margin: 0;
       color: #333;
       line-height: 1.5;
+      position: relative;
     }
     
     h3 {
@@ -42,11 +43,16 @@
       margin-bottom: 1.2rem;
     }
     
-    #mediumRepeater {
+    .carousel-container {
+      position: relative;
       max-width: 1200px;
       margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      overflow: hidden;
+    }
+    
+    #mediumRepeater {
+      display: flex;
+      transition: transform 0.5s ease;
       gap: 30px;
       padding: 20px 0;
     }
@@ -60,6 +66,22 @@
       height: 100%;
       display: flex;
       flex-direction: column;
+      min-width: calc(33.333% - 20px);
+      flex: 0 0 calc(33.333% - 20px);
+    }
+    
+    @media (max-width: 1024px) {
+      .article-card {
+        min-width: calc(50% - 15px);
+        flex: 0 0 calc(50% - 15px);
+      }
+    }
+    
+    @media (max-width: 640px) {
+      .article-card {
+        min-width: 100%;
+        flex: 0 0 100%;
+      }
     }
     
     .article-card:hover {
@@ -116,7 +138,6 @@
     .loading, .error-message {
       text-align: center;
       padding: 40px;
-      grid-column: 1 / -1;
       background: white;
       border-radius: 4px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.05);
@@ -127,25 +148,78 @@
       color: #e74c3c;
     }
     
+    .nav-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 50px;
+      height: 50px;
+      background: rgba(0, 31, 63, 0.7);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      cursor: pointer;
+      z-index: 10;
+      transition: background 0.3s ease, transform 0.3s ease;
+      font-size: 24px;
+    }
+    
+    .nav-arrow:hover {
+      background: rgba(0, 31, 63, 0.9);
+      transform: translateY(-50%) scale(1.1);
+    }
+    
+    .prev-arrow {
+      left: 10px;
+    }
+    
+    .next-arrow {
+      right: 10px;
+    }
+    
+    .nav-arrow.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    /* Arrows */
+    .nav-arrow svg {
+      width: 20px;
+      height: 20px;
+      fill: white;
+    }
+    
     /* Responsive adjustments */
     @media (max-width: 768px) {
       body {
         padding: 15px;
       }
       
-      #mediumRepeater {
-        grid-template-columns: 1fr;
-      }
-      
-      .img-container {
-        height: 200px;
+      .nav-arrow {
+        width: 40px;
+        height: 40px;
       }
     }
   </style>
 </head>
 <body>
-  <div id="mediumRepeater">
-    <div class="loading">Loading latest articles...</div>
+  <div class="carousel-container">
+    <div id="mediumRepeater">
+      <div class="loading">Loading latest articles...</div>
+    </div>
+    
+    <div class="nav-arrow prev-arrow" id="prevArrow">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+      </svg>
+    </div>
+    <div class="nav-arrow next-arrow" id="nextArrow">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+      </svg>
+    </div>
   </div>
 
   <script>
@@ -158,6 +232,72 @@
       // Fix common issues with Medium image URLs
       return url.replace(/^\/\//, 'https://');
     }
+    
+    // Carousel navigation variables
+    let currentPosition = 0;
+    let totalItems = 0;
+    let visibleItems = 3;
+    
+    // Initialize navigation
+    function initNavigation() {
+      const prevArrow = document.getElementById('prevArrow');
+      const nextArrow = document.getElementById('nextArrow');
+      
+      // Initially hide prev arrow (we start at the beginning)
+      prevArrow.classList.add('disabled');
+      
+      // Set up event listeners
+      prevArrow.addEventListener('click', () => {
+        if (currentPosition > 0) {
+          currentPosition--;
+          updateCarouselPosition();
+        }
+      });
+      
+      nextArrow.addEventListener('click', () => {
+        if (currentPosition < totalItems - visibleItems) {
+          currentPosition++;
+          updateCarouselPosition();
+        }
+      });
+      
+      // Update visible items based on screen size
+      updateVisibleItems();
+      window.addEventListener('resize', () => {
+        updateVisibleItems();
+        updateCarouselPosition();
+      });
+    }
+    
+    // Update how many items are visible based on screen width
+    function updateVisibleItems() {
+      if (window.innerWidth <= 640) {
+        visibleItems = 1;
+      } else if (window.innerWidth <= 1024) {
+        visibleItems = 2;
+      } else {
+        visibleItems = 3;
+      }
+    }
+    
+    // Update carousel position
+    function updateCarouselPosition() {
+      const container = document.getElementById('mediumRepeater');
+      const prevArrow = document.getElementById('prevArrow');
+      const nextArrow = document.getElementById('nextArrow');
+      
+      // Calculate width including gap
+      const cardWidth = container.children[0].offsetWidth;
+      const gapWidth = 30; // matches the gap in CSS
+      const moveAmount = cardWidth + gapWidth;
+      
+      // Move the carousel
+      container.style.transform = `translateX(-${currentPosition * moveAmount}px)`;
+      
+      // Update arrow states
+      prevArrow.classList.toggle('disabled', currentPosition === 0);
+      nextArrow.classList.toggle('disabled', currentPosition >= totalItems - visibleItems);
+    }
 
     fetch(api)
       .then(res => {
@@ -169,8 +309,11 @@
           throw new Error('Feed error: ' + data.message);
         }
         
-        const items = data.items.slice(0, 3);
-        const container = document.getElementById("mediumRepeater");
+        // Get all items, not just 3
+        const items = data.items;
+        totalItems = items.length;
+        
+        const container = document.getElementById('mediumRepeater');
         container.innerHTML = "";
 
         if (items.length === 0) {
@@ -208,15 +351,19 @@
           `;
           container.appendChild(card);
         });
+        
+        // Initialize navigation after articles are loaded
+        initNavigation();
       })
       .catch(err => {
-        document.getElementById("mediumRepeater").innerHTML = 
+        document.getElementById('mediumRepeater').innerHTML = 
           "<div class='error-message'>Failed to load articles. Please try again later.</div>";
         console.error("RSS2JSON error:", err);
+        
+        // Hide navigation arrows in case of error
+        document.getElementById('prevArrow').style.display = 'none';
+        document.getElementById('nextArrow').style.display = 'none';
       });
   </script>
 </body>
 </html>
-
-
-
