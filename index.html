@@ -47,7 +47,7 @@
       position: relative;
       max-width: 1200px;
       margin: 0 auto;
-      overflow: visible;
+      overflow: hidden;
       padding: 0 50px;
     }
     
@@ -69,6 +69,7 @@
       flex-direction: column;
       min-width: calc(33.333% - 20px);
       flex: 0 0 calc(33.333% - 20px);
+      max-width: calc(33.333% - 20px);
     }
     
     @media (max-width: 1024px) {
@@ -294,6 +295,14 @@
       } else {
         visibleItems = 3;
       }
+      
+      // Update arrow state based on total items
+      const nextArrow = document.getElementById('nextArrow');
+      if (totalItems <= visibleItems) {
+        nextArrow.classList.add('disabled');
+      } else {
+        nextArrow.classList.remove('disabled');
+      }
     }
     
     // Update carousel position
@@ -325,7 +334,7 @@
           throw new Error('Feed error: ' + data.message);
         }
         
-        // Get all items, not just 3
+        // Get all items from the feed
         const items = data.items;
         totalItems = items.length;
         
@@ -337,6 +346,7 @@
           return;
         }
 
+        // Process all articles, not just the first 3
         items.forEach(item => {
           const title = item.title;
           const link = item.link;
@@ -370,6 +380,9 @@
         
         // Initialize navigation after articles are loaded
         initNavigation();
+        
+        // Set initial container width to show only the specified number of articles
+        updateVisibleItems();
       })
       .catch(err => {
         document.getElementById('mediumRepeater').innerHTML = 
@@ -383,4 +396,5 @@
   </script>
 </body>
 </html>
+
 
