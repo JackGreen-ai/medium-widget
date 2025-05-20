@@ -47,7 +47,8 @@
       position: relative;
       max-width: 1200px;
       margin: 0 auto;
-      overflow: hidden;
+      overflow: visible;
+      padding: 0 50px;
     }
     
     #mediumRepeater {
@@ -55,6 +56,7 @@
       transition: transform 0.5s ease;
       gap: 30px;
       padding: 20px 0;
+      align-items: stretch;
     }
     
     .article-card {
@@ -63,7 +65,6 @@
       overflow: hidden;
       box-shadow: 0 1px 3px rgba(0,0,0,0.05);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
-      height: 100%;
       display: flex;
       flex-direction: column;
       min-width: calc(33.333% - 20px);
@@ -75,12 +76,25 @@
         min-width: calc(50% - 15px);
         flex: 0 0 calc(50% - 15px);
       }
+      
+      .carousel-container {
+        padding: 0 40px;
+      }
     }
     
     @media (max-width: 640px) {
       .article-card {
         min-width: 100%;
         flex: 0 0 100%;
+      }
+      
+      .carousel-container {
+        padding: 0 30px;
+      }
+      
+      .nav-arrow svg {
+        width: 24px;
+        height: 24px;
       }
     }
     
@@ -94,6 +108,7 @@
       height: 180px;
       overflow: hidden;
       position: relative;
+      flex-shrink: 0;
     }
     
     .img-container img {
@@ -109,9 +124,9 @@
     
     .card-content {
       padding: 20px;
-      flex-grow: 1;
       display: flex;
       flex-direction: column;
+      flex: 1;
     }
     
     .article-card a {
@@ -142,6 +157,7 @@
       border-radius: 4px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.05);
       font-family: 'Pp Eiko Thin', serif;
+      width: 100%;
     }
     
     .error-message {
@@ -152,43 +168,43 @@
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      width: 50px;
-      height: 50px;
-      background: rgba(0, 31, 63, 0.7);
-      border-radius: 50%;
+      width: 40px;
+      height: 40px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: white;
       cursor: pointer;
       z-index: 10;
-      transition: background 0.3s ease, transform 0.3s ease;
-      font-size: 24px;
+      transition: opacity 0.2s ease;
+      background: transparent;
+      border-radius: 0;
+      opacity: 0.6;
     }
     
     .nav-arrow:hover {
-      background: rgba(0, 31, 63, 0.9);
-      transform: translateY(-50%) scale(1.1);
+      opacity: 1;
     }
     
     .prev-arrow {
-      left: 10px;
+      left: 0;
     }
     
     .next-arrow {
-      right: 10px;
+      right: 0;
     }
     
     .nav-arrow.disabled {
-      opacity: 0.5;
+      opacity: 0.3;
       cursor: not-allowed;
     }
     
-    /* Arrows */
+    /* Update the arrow SVGs for a more professional look */
     .nav-arrow svg {
-      width: 20px;
-      height: 20px;
-      fill: white;
+      width: 30px;
+      height: 30px;
+      fill: #001F3F;
+      stroke: #001F3F;
+      stroke-width: 0.5;
     }
     
     /* Responsive adjustments */
@@ -367,3 +383,4 @@
   </script>
 </body>
 </html>
+
