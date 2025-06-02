@@ -48,6 +48,9 @@
       transition: transform 0.2s ease, box-shadow 0.2s ease;
       margin-bottom: 20px;
       padding: 20px;
+      text-decoration: none;
+      color: inherit;
+      display: block;
     }
     
     .article-card:hover {
@@ -72,31 +75,34 @@
       line-height: 1.5;
     }
     
-    .article-card a {
+    .published-info {
+      font-size: 0.7rem;
+      color: #aaa;
+      margin-bottom: 1rem;
+    }
+    
+    .load-more {
       font-family: 'Montserrat', sans-serif;
       background: #001F3F;
       color: white;
-      padding: 8px 16px;
+      padding: 10px 20px;
       border-radius: 4px;
       text-decoration: none;
       display: inline-block;
-      margin-top: auto;
       font-weight: 500;
       font-size: 0.85rem;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       transition: background-color 0.2s;
       text-align: center;
+      cursor: pointer;
+      margin: 20px auto;
+      display: block;
+      width: fit-content;
     }
     
-    .article-card a:hover {
+    .load-more:hover {
       background: #00305a;
-    }
-    
-    .published-info {
-      font-size: 0.7rem;
-      color: #aaa;
-      margin-bottom: 1rem;
     }
   </style>
 </head>
@@ -104,10 +110,13 @@
   <div class="article-list" id="mediumRepeater">
     <div class="loading">Loading latest articles...</div>
   </div>
+  <div class="load-more" id="loadMore">Load More</div>
 
   <script>
     const feedURL = "https://medium.com/feed/@jackgreencrypto";
     const api = "https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent(feedURL);
+    let currentIndex = 0;
+    const articlesPerPage = 3;
 
     fetch(api)
       .then(res => {
@@ -128,31 +137,45 @@
           return;
         }
 
-        items.forEach(item => {
-          const title = item.title;
-          const link = item.link;
-          const rawDesc = item.description;
-          const desc = rawDesc.replace(/<[^>]*>/g, '').slice(0, 180) + "...";
-          const pubDate = new Date(item.pubDate);
-          const formattedPubDate = pubDate.toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "2-digit"
-          });
-          const daysAgo = Math.floor((new Date() - pubDate) / (1000 * 60 * 60 * 24));
+        function loadArticles() {
+          const end = Math.min(currentIndex + articlesPerPage, items.length);
+          for (let i = currentIndex; i < end; i++) {
+            const item = items[i];
+            const title = item.title;
+            const link = item.link;
+            const rawDesc = item.description;
+            const desc = rawDesc.replace(/<[^>]*>/g, '').slice(0, 180) + "...";
+            const pubDate = new Date(item.pubDate);
+            const formattedPubDate = pubDate.toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "short",
+              day: "2-digit"
+            });
+            const daysAgo = Math.floor((new Date() - pubDate) / (1000 * 60 * 60 * 24));
 
-          const card = document.createElement("div");
-          card.className = "article-card";
-          card.innerHTML = `
-            <div class="card-content">
-              <h3>${title}</h3>
-              <p>${desc}</p>
-              <p class="published-info">Published: ${formattedPubDate} &middot; ${daysAgo} days ago</p>
-              <a href="${link}" target="_blank" rel="noopener">Read more</a>
-            </div>
-          `;
-          container.appendChild(card);
-        });
+            const card = document.createElement("a");
+            card.className = "article-card";
+            card.href = link;
+            card.target = "_blank";
+            card.rel = "noopener";
+            card.innerHTML = `
+              <div class="card-content">
+                <h3>${title}</h3>
+                <p>${desc}</p>
+                <p class="published-info">Published: ${formattedPubDate} &middot; ${daysAgo} days ago</p>
+              </div>
+            `;
+            container.appendChild(card);
+          }
+          currentIndex = end;
+          if (currentIndex >= items.length) {
+            document.getElementById('loadMore').style.display = 'none';
+          }
+        }
+
+        loadArticles();
+
+        document.getElementById('loadMore').addEventListener('click', loadArticles);
       })
       .catch(err => {
         document.getElementById('mediumRepeater').innerHTML = 
@@ -162,3 +185,4 @@
   </script>
 </body>
 </html>
+
