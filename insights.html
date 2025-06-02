@@ -60,6 +60,7 @@
       color: inherit;
       display: block;
       padding: 10px;
+      max-width: 350px;
     }
     
     .article-card:hover {
@@ -138,7 +139,7 @@
     const api = "https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent(feedURL);
     let currentPosition = 0;
     let totalItems = 0;
-    const visibleItems = 3;
+    const visibleItems = 2;
 
     fetch(api)
       .then(res => {
@@ -238,4 +239,3 @@
   </script>
 </body>
 </html>
-
