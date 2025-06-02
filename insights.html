@@ -140,6 +140,69 @@
     let currentPosition = 0;
     let totalItems = 0;
     const visibleItems = 2;
+    let items = [];
+    let container;
+
+    function displayArticles(startIndex) {
+      container.innerHTML = "";
+      const endIndex = Math.min(startIndex + visibleItems, totalItems);
+      for (let i = startIndex; i < endIndex; i++) {
+        const item = items[i];
+        const title = item.title;
+        const link = item.link;
+        const rawDesc = item.description;
+        const desc = rawDesc.replace(/<[^>]*>/g, '').slice(0, 100) + "...";
+        const pubDate = new Date(item.pubDate);
+        const formattedPubDate = pubDate.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "2-digit"
+        });
+        const daysAgo = Math.floor((new Date() - pubDate) / (1000 * 60 * 60 * 24));
+
+        const card = document.createElement("a");
+        card.className = "article-card";
+        card.href = link;
+        card.target = "_blank";
+        card.rel = "noopener";
+        card.innerHTML = `
+          <div class="card-content">
+            <h3>${title}</h3>
+            <p>${desc}</p>
+            <p class="published-info">Published: ${formattedPubDate} &middot; ${daysAgo} days ago</p>
+          </div>
+        `;
+        container.appendChild(card);
+      }
+    }
+
+    function updateArrowStates() {
+      const prevArrow = document.getElementById('prevArrow');
+      const nextArrow = document.getElementById('nextArrow');
+      prevArrow.classList.toggle('disabled', currentPosition === 0);
+      nextArrow.classList.toggle('disabled', currentPosition >= totalItems - visibleItems);
+    }
+
+    function initNavigation() {
+      const prevArrow = document.getElementById('prevArrow');
+      const nextArrow = document.getElementById('nextArrow');
+      prevArrow.classList.add('disabled');
+      prevArrow.addEventListener('click', () => {
+        if (currentPosition > 0) {
+          currentPosition -= visibleItems;
+          displayArticles(currentPosition);
+          updateArrowStates();
+        }
+      });
+      nextArrow.addEventListener('click', () => {
+        if (currentPosition < totalItems - visibleItems) {
+          currentPosition += visibleItems;
+          displayArticles(currentPosition);
+          updateArrowStates();
+        }
+      });
+      updateArrowStates();
+    }
 
     fetch(api)
       .then(res => {
@@ -150,51 +213,14 @@
         if (data.status !== 'ok') {
           throw new Error('Feed error: ' + data.message);
         }
-        
-        const items = data.items;
+        items = data.items;
         totalItems = items.length;
-        
-        const container = document.getElementById('mediumRepeater');
+        container = document.getElementById('mediumRepeater');
         container.innerHTML = "";
-
         if (items.length === 0) {
           container.innerHTML = "<div class='error-message'>No articles found.</div>";
           return;
         }
-
-        function displayArticles(startIndex) {
-          container.innerHTML = "";
-          const endIndex = Math.min(startIndex + visibleItems, totalItems);
-          for (let i = startIndex; i < endIndex; i++) {
-            const item = items[i];
-            const title = item.title;
-            const link = item.link;
-            const rawDesc = item.description;
-            const desc = rawDesc.replace(/<[^>]*>/g, '').slice(0, 100) + "...";
-            const pubDate = new Date(item.pubDate);
-            const formattedPubDate = pubDate.toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "short",
-              day: "2-digit"
-            });
-            const daysAgo = Math.floor((new Date() - pubDate) / (1000 * 60 * 60 * 24));
-
-            const card = document.createElement("a");
-            card.className = "article-card";
-            card.href = link;
-            card.target = "_blank";
-            card.rel = "noopener";
-            card.innerHTML = `
-              <div class="card-content">
-                <h3>${title}</h3>
-                <p>${desc}</p>
-                <p class="published-info">Published: ${formattedPubDate} &middot; ${daysAgo} days ago</p>
-              </div>
-            `;
-            container.appendChild(card);
-          }
-        }
-
         displayArticles(currentPosition);
         initNavigation();
       })
@@ -203,39 +229,6 @@
           "<div class='error-message'>Failed to load articles. Please try again later.</div>";
         console.error("RSS2JSON error:", err);
       });
-
-    function initNavigation() {
-      const prevArrow = document.getElementById('prevArrow');
-      const nextArrow = document.getElementById('nextArrow');
-      
-      prevArrow.classList.add('disabled');
-      
-      prevArrow.addEventListener('click', () => {
-        if (currentPosition > 0) {
-          currentPosition -= visibleItems;
-          displayArticles(currentPosition);
-          updateArrowStates();
-        }
-      });
-      
-      nextArrow.addEventListener('click', () => {
-        if (currentPosition < totalItems - visibleItems) {
-          currentPosition += visibleItems;
-          displayArticles(currentPosition);
-          updateArrowStates();
-        }
-      });
-      
-      updateArrowStates();
-    }
-
-    function updateArrowStates() {
-      const prevArrow = document.getElementById('prevArrow');
-      const nextArrow = document.getElementById('nextArrow');
-      
-      prevArrow.classList.toggle('disabled', currentPosition === 0);
-      nextArrow.classList.toggle('disabled', currentPosition >= totalItems - visibleItems);
-    }
   </script>
 </body>
 </html>
