@@ -247,6 +247,12 @@
       font-weight: 200;
       color: #333;
     }
+    
+    .published-info {
+      font-size: 0.85rem;
+      color: #777;
+      margin-bottom: 1rem;
+    }
   </style>
 </head>
 <body>
@@ -402,7 +408,7 @@
             <div class="card-content">
               <h3>${title}</h3>
               <p>${desc}</p>
-              <p>Published: ${pubDate.toDateString()} (${daysAgo} days ago)</p>
+              <p class="published-info">Published: ${pubDate.toDateString()} &middot; ${daysAgo} days ago</p>
               <a href="${link}" target="_blank" rel="noopener">Read more</a>
             </div>
           `;
