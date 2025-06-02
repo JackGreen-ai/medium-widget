@@ -44,6 +44,7 @@
     
     #mediumRepeater {
       display: flex;
+      flex-direction: column;
       transition: transform 0.5s ease;
       gap: 20px;
       padding: 20px 0;
@@ -55,8 +56,6 @@
       overflow: hidden;
       box-shadow: 0 1px 3px rgba(0,0,0,0.05);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
-      flex: 0 0 calc(33.333% - 20px);
-      max-width: calc(33.333% - 20px);
       text-decoration: none;
       color: inherit;
       display: block;
@@ -226,11 +225,11 @@
       const prevArrow = document.getElementById('prevArrow');
       const nextArrow = document.getElementById('nextArrow');
       
-      const cardWidth = container.children[0].offsetWidth;
-      const gapWidth = 20;
-      const moveAmount = cardWidth + gapWidth;
+      const cardHeight = container.children[0].offsetHeight;
+      const gapHeight = 20;
+      const moveAmount = cardHeight + gapHeight;
       
-      container.style.transform = `translateX(-${currentPosition * moveAmount}px)`;
+      container.style.transform = `translateY(-${currentPosition * moveAmount}px)`;
       
       prevArrow.classList.toggle('disabled', currentPosition === 0);
       nextArrow.classList.toggle('disabled', currentPosition >= totalItems - visibleItems);
@@ -238,5 +237,3 @@
   </script>
 </body>
 </html>
-
-
