@@ -380,6 +380,8 @@
           const link = item.link;
           const rawDesc = item.description;
           const desc = rawDesc.replace(/<[^>]*>/g, '').slice(0, 180) + "...";
+          const pubDate = new Date(item.pubDate);
+          const daysAgo = Math.floor((new Date() - pubDate) / (1000 * 60 * 60 * 24));
 
           // Extract image with fallback handling
           let image = '';
@@ -400,6 +402,7 @@
             <div class="card-content">
               <h3>${title}</h3>
               <p>${desc}</p>
+              <p>Published: ${pubDate.toDateString()} (${daysAgo} days ago)</p>
               <a href="${link}" target="_blank" rel="noopener">Read more</a>
             </div>
           `;
@@ -424,7 +427,3 @@
   </script>
 </body>
 </html>
-
-
-
-
