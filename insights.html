@@ -39,7 +39,10 @@
       position: relative;
       max-width: 800px;
       margin: 0 auto;
-      overflow: hidden;
+      overflow: visible;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     
     #mediumRepeater {
@@ -48,6 +51,7 @@
       transition: transform 0.5s ease;
       gap: 20px;
       padding: 20px 0;
+      align-items: center;
     }
     
     .article-card {
@@ -75,9 +79,9 @@
     }
     
     .nav-arrow {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
+      position: static;
+      top: unset;
+      transform: none;
       width: 30px;
       height: 30px;
       display: flex;
@@ -96,11 +100,17 @@
     }
     
     .prev-arrow {
-      left: 0;
+      left: unset;
+      right: 100%;
+      margin-right: 10px;
+      position: static;
     }
     
     .next-arrow {
-      right: 0;
+      left: 100%;
+      right: unset;
+      margin-left: 10px;
+      position: static;
     }
     
     .nav-arrow.disabled {
@@ -115,17 +125,27 @@
       stroke: #001F3F;
       stroke-width: 0.5;
     }
+    
+    .carousel-container-inner {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      width: 100%;
+      justify-content: center;
+    }
   </style>
 </head>
 <body>
   <div class="carousel-container">
-    <div id="mediumRepeater">
-      <div class="loading">Loading latest articles...</div>
-    </div>
     <div class="nav-arrow prev-arrow" id="prevArrow">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
         <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
       </svg>
+    </div>
+    <div class="carousel-container-inner">
+      <div id="mediumRepeater">
+        <div class="loading">Loading latest articles...</div>
+      </div>
     </div>
     <div class="nav-arrow next-arrow" id="nextArrow">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
